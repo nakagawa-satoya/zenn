@@ -21,6 +21,7 @@ publication_name: ftd_tech_blog
 4. 他とは硬派な雰囲気
 5. 一歩先のエンジニアになれる
 
+
 ## OCha Cafe を十分に楽しむためには
 1. Hang out Cafe なんで事前準備が大事
 - 無料で準備するには
@@ -74,8 +75,63 @@ Continus Optimization
 
 ## eBPF での興味分野
 - OpenTelemetry
+  - k8s + OpenTelemetry は 第１回 LT枠でやっています。
 - eBPF 
 https://www.webiscope.com/articles/ebpf-opentelemetry-the-perfect-match-for-observability/
 https://www.slideshare.net/sakura_pr/ebpf
 https://zenn.dev/hidenori3/articles/e1352e8cfeb2af
-- Wasm 
+- Wasm
+  https://thenewstack.io/the-importance-of-calicos-pluggable-data-plane/
+- 
+- 
+- SQLite + Marmot
+  https://www.youtube.com/watch?v=HycGtLjlikI
+- https://github.com/maxpert/marmot
+
+https://www.youtube.com/watch?v=unnVlwyevmU
+# LT 
+## Oracle に
+
+LT セッション情報を記載します。
+社名を出して
+
+connpass
+
+SlideShare の公開をURLを載せる
+
+Archive Season 7
+
+公開させていただきます。
+
+Archiveとした
+
+50分ぐらいセッション
+
+当日はいつも
+Guest Wifi 
+
+当日の流れ
+6時50分
+
+接続チェック
+簡単な流れ。動作チェック
+どんなに遅くとも
+18時半
+
+会場のPC
+講演者にはZoomに入っていただく
+その際には
+ご自身のZoomからプレゼンから配置
+マイク系は準備指定
+17時から18時にパネリスト経由で
+
+会場に再送させていたdかう
+
+3500円
+
+安達さん
+市川さんがeBPFのパネリスト
+
+
+
+分散トレーシングは OpenTelemetry Kubernetes 
