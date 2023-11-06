@@ -11,9 +11,19 @@ publication_name: ftd_tech_blog
 ## 自己紹介
 - 1P
 - 
-## Why OCha Cafe Join 
+## Ocha Cafe を知ったきっかけ
+＊2023年7月5日開催
+IaC のベストプラクティクス
+7.11
+<blockquote class="twitter-tweet"><p lang="ja" dir="ltr">【ハイブリッド開催】 GitHub Actions を使いこなせ！ に参加を申し込みました！ <a href="https://t.co/MapfHfmTZy">https://t.co/MapfHfmTZy</a> <a href="https://twitter.com/hashtag/ochacafe?src=hash&amp;ref_src=twsrc%5Etfw">#ochacafe</a></p>&mdash; 中川聡也 (@xiombatsg) <a href="https://twitter.com/xiombatsg/status/1678572311648272384?ref_src=twsrc%5Etfw">July 11, 2023</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
 ### コンパス
 ### 新田さん
+
+
+
+
 ## OCha Cafe の魅力
 1. Oracle Office
 2. 資料が充実
