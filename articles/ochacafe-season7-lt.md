@@ -30,6 +30,13 @@ IaC のベストプラクティクス
 ~
 ## 各会
 
+## OCha Cafe Season7 ふりかえり
+1. Kubernetes 超入門	Container, kubectl, manifest, etc.
+2	IaC のベストプラクティス	Terraform, Pulumi AI, etc.
+3	GitHub Actions を使いこなせ！	GitHub Actions, etc.
+4	セキュアなWeb APIの作り方	Keycloak, cert-manager, etc.
+5	Cluster API - K8sクラスタ管理の新スタイル	Cluster API, API Provider for OCI, etc.
+6	次はこれでしょ！eBPF	eBPF, CNI, Cilium, etc.
 
 ## OCha Cafe の魅力
 1. Oracle Office
@@ -93,7 +100,29 @@ Continus Optimization
 - コスト最適化
 
 
-## eBPF での興味分野
+## eBPF セッション予想
+この後のメインセッションで下記が聞けるんじゃないかと予想しています
+- eBPF とは? やれること
+そもそもの成り立ち
+- k8s + eBPF 
+- eBPF + Network 
+- eBPF + Observability
+- eBPF + Security
+
+----
+eBPF のセッション 正解は。。。 この後で！
+
+----
+個人的にはこれについても語ってもらいたい
+- GPU Profiling with eBPF 
+  - https://www.youtube.com/watch?v=5xAghByteYc
+
+- 
+
+
+
+
+での興味分野
 - OpenTelemetry
   - k8s + OpenTelemetry は 第１回 LT枠でやっています。
 - eBPF 
