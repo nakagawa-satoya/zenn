@@ -6,3 +6,4 @@ topics: []
 published: false
 publication_name: ftd_tech_blog
 ---
+# PostmanのデータをPreview用にHopscotchに自動同期する
