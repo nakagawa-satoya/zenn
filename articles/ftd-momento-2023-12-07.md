@@ -1,95 +1,192 @@
 ---
-title: "Momento Cache で効率の良いCache 取得方法の模索"
+title: "Momento Cache + D1 を使って簡易絞り込み機能を作る"
 emoji: "👌"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: ["Momento", "Hono", "Cloudflare",]
-published: false
+topics: ["Momento", "Hono", "Cloudflare","D1"]
+published: true
 publication_name: ftd_tech_blog
 ---
 
-# Momento Cache で効率の良いCache 取得方法の模索
+# Momento Cache + D1 を使って簡易絞り込み機能を作る
 
-## キャッシュアルゴリズム 
-### CPU
-https://ja.wikipedia.org/wiki/%E3%82%AD%E3%83%A3%E3%83%83%E3%82%B7%E3%83%A5%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0
-- n-way set associative cache
-- 2-way set associative cache
-- direct mapped cache
-- fully associative cache
-- 
-## キャッシュコヒーレンス
-https://ja.wikipedia.org/wiki/%E3%82%AD%E3%83%A3%E3%83%83%E3%82%B7%E3%83%A5%E3%82%B3%E3%83%92%E3%83%BC%E3%83%AC%E3%83%B3%E3%82%B7
+:::message
+この記事は、Momento Advent Calendar 2023 7日目の記事です。
+:::
 
-- ディレクトリーベース
-- バススヌーピんぐ
-- すなーフィン具
+@[card](https://qiita.com/advent-calendar/2023/momento)
 
-## 一貫性モデル
-- MESI
-- Write Once
-- Synapse 
-- Berkeley
-- Firefly
-- Dragon
+## やりたいこと
+### 前回記事
+@[card](https://zenn.dev/ftd_tech_blog/articles/ftd-momento-2023-12-03)
+#### この課題
+![2023-12-03.png](/images/paapi-momento/2023-12-03.png)
 
-## MESI
-https://ja.wikipedia.org/wiki/MESI%E3%83%97%E3%83%AD%E3%83%88%E3%82%B3%E3%83%AB
+- こちらは結果、DictionaryGetFields でまとめて取ることで解決しました。
 
-M - Modified(変更): 当該キャッシュだけに存在し、主記憶上の値から変更されている(dirty)。他のCPUがこのキャッシュラインに相当する主記憶をリードするのを許可する前に、キャッシュ機構はこのキャッシュラインをいずれかの時点で主記憶に書き戻さなければならない。
-E - Exclusive(排他): 当該キャッシュだけに存在するが、主記憶上の値と一致している(clean)。
-S - Shared(共有): システム内の他のキャッシュにも同じキャッシュラインが存在している（主記憶とも内容が一致）。
-I - Invalid(無効): このキャッシュラインは無効。
+##### 参考サイト
+https://zenn.dev/momentobigfun/articles/7bd04650162aed
+:::message
+[Momento Big Fun](https://zenn.dev/momentobigfun)さんありがとうございます。
+:::
 
-## 並列計算一貫性モデル
-https://ja.wikipedia.org/wiki/%E4%B8%A6%E5%88%97%E8%A8%88%E7%AE%97#%E4%B8%80%E8%B2%AB%E6%80%A7%E3%83%A2%E3%83%87%E3%83%AB
+## とはいえ
+momento cache　はキー指定か、全部取得しかできない。絞り込みはListやスコアなどを使って、値を使った内容のフィルタはできる。
+### Momentoは
+- キャッシュなので一発引きするのは適している
+- まとめて取る方法はあるが、絞り込みはキーを指定する必要があるので、キーを知らない場合は利用できない
 
-## ChatGPT
+**なんとか絞り込み機能をつけたい**
 
-レスポンス
-KVS（Key-Value Store）の最適化に関する情報は、特定のKVSシステムに依存します。一般的なアドバイスとしては、KVSの最適化については以下のポイントを考慮することが重要です：
+## どうやって？
+Cloudflare には　D1がある。D1 はsqlite3 のため、SQLを使って絞り込みができる。
 
-キーの設計: キーの設計は、KVSの性能に影響を与えます。キーは一意で、検索しやすいものであるべきです。
+## システム要件
+- 前回のシステムに下記を追加する。今回の内容を入れていますので、こちらを確認してください。
 
-キャッシュの利用: キャッシュを活用して、アクセスパフォーマンスを向上させることができます。データの読み取り回数を減らすために、よくアクセスされるデータをキャッシュに保存します。
+@[card](https://gitlab.com/future-techno-developers/public/paapi-moment/paapi-5-worker)
 
-データの圧縮: データの圧縮を使用して、ストレージスペースを節約し、読み取り/書き込みの速度を向上させることができます。
+### バックエンド
+- Cloudflare D1 キーワード登録時に、indexを作成する
+- Worker でキーワードを受け取る
+- 下記のクエリを投げるselect asin from books where Title like '%{input}%'
+- キーのリストが取得できるので、それを使って、DictionaryGetFields でまとめて取得する
 
-インデックスの最適化: インデックスを適切に設計し、クエリのパフォーマンスを向上させることができます。
+```mermaid
+---
+title: 処理イメージ
+---
+graph
+    Front --search?keyword=ChatGPT--> Worker --"1. select asin from books where Title like '%ChatGPT%'  "-->D1
+    D1 --2. ChatGPTを含む ASIN を返却--> Worker --"3. DirectoryGetFields(ASIN)"--> Momento[Momento Cache] 
+```
 
-クエリの最適化: クエリを効率的に実行するために、クエリの最適化を行います。クエリプランナーやクエリチューニングツールを使用することがあります。
+:::message
+D1 を使うことで検索性能を確保する
+:::
 
-レプリケーションとシャーディング: 高可用性やスケーラビリティを実現するために、データのレプリケーションやシャーディングを考慮します。
+:::message alert
+全部D1でいいじゃん。というのは言ってはいけない
+:::
 
-ハードウェアの最適化: ハードウェアのリソース（CPU、メモリ、ストレージ）を適切に構成し、性能を最適化します。
+## 作る
+### Cloudflare D1構築
+今回はサクッと Drizzle ORM を使って構築します。
 
-KVSの種類や使用しているテクノロジーによって、最適化の具体的な方法は異なる可能性があります。詳細な情報を提供するには、具体的なKVSシステムに関する情報が必要です。どのKVSシステムについての情報が必要ですか？
+#### Drizzle のインストールはこちらで
+@[card](https://orm.drizzle.team/)
+
+#### キャッシュテーブル
+```typescript:src/db/schema/books.ts
+export const books = sqliteTable(
+	"books",
+	{
+		asin: text("asin").primaryKey(),
+		Title: text("Title").notNull(),
+	},
+	(books) => ({
+		asinIdx: uniqueIndex("asinIdx").on(books.asin),
+		TitleIdx: uniqueIndex("TitleIdx").on(books.Title),
+	}),
+);
+```
+#### wrangler.toml
+D1 設定を追加する
+```toml:config/wrangler.dev.toml
+[[ d1_databases ]]
+binding = "DB" # i.e. available in your Worker on env.DB
+database_name = "asin"
+database_id = ""
+migrations_dir = "drizzle"
+```
+
+#### migrateファイル作成&migrate
+```Bash
+npx drizzle-kit generate:sqlite --schema=src/db/schema/books.ts --out=config/drizzle
+npx wrangler d1 migrations apply asin -c config/wrangler.dev.toml
+```
+#### 前回のスクリプト修正
+##### -e 指定をしていると D1 Bindingsがうまくできない
+ここの `-e dev` を外します。これでも`.dev.vars`は読み込まれます。
+```bash
+wrangler dev -c config/wrangler.dev.toml -e dev
+```
+
+:::message
+-e dev を入れた時に D1 Bindings を設定する良い方法があれば教えてください。
+:::
+
+### プログラム概要
+#### キャッシュインデックスの作成(/momento/index/create)
+すでにキャッシュされているキャッシュからインデックスを作成します。
+
+1. Dictionary から fetch して、レコードを取得
+2. ASINをキー、Titleを値として、インデックスを作成して、D1に保存します。
+
+```typescript:src/momento/index_builder.ts
+public static async build(cache: Cache, cacheDB: D1Database) {
+    const values = await cache.fetch();
+    const keys = [];
+    for (const value of values) {
+        keys.push({ asin: value[0], Title: JSON.parse(value[1]).Title });
+    }
+    return drizzle(cacheDB).insert(books).values(keys).onConflictDoNothing();
+}
+```
+
+:::message
+実際はoriginからデータを取得したタイミングで、indexを作成しても良いとは思いますが、
+今回は任意のタイミングで作成できるように APIにしています。
+:::
 
 
-## Redis
-https://redis.io/docs/management/optimization/benchmarks/
+#### キャッシュインデックスのリストアップ(/momento/index)
+テスト用にindexを返却します。
+```json:index例
+[
+{
+    "asin":"B0C8YJRGW8",
+    "Title":"OpenAI GPT-4/ChatGPT/LangChain 人工知能プログラミング実践入門"
+},
+{
+    "asin":"B0CBR9GYF6",
+    "Title":"GitLabに学ぶ 世界最先端のリモート組織のつくりかた ドキュメントの活用でオフィスなしでも最大の成果を出すグローバル企業のしくみ"
+},
+{
+    "asin":"B0CJRDFJZB",
+    "Title":"ChatGPT/LangChainによるチャットシステム構築［実践］入門"
+}]
+```
+#### キャッシュに登録されているTitleからの検索(/momento/search)
+```Typescript:src/momento/index_builder.ts
+public static async search(
+    cache: Cache,
+    keyword: string,
+    cacheDB: D1Database,
+) {
+    const keys = await drizzle(cacheDB)
+        .select({ asin: books.asin })
+        .from(books)
+        .where(like(books.Title, `%${keyword}%`));
+    return cache.gets(keys.map((key) => key.asin));
+}
+```
+##### 使い方
+- Request
+```bash
+curl -X GET "https://paapi5_worker.future-techno-developers.workers.dev/momento/search?keyword=ChatGPT"
+```
+:::message
+サンプルとだと ２つの書籍が取れるようになります。
+:::
 
-https://redis.io/docs/manual/keyspace/
+## 感想
+1. D1とMomento Cache の組み合わせは案外相性が良い
+   - D1はTransactionがなかったり、レコードが増えると重くなる傾向があるので、indexレベルの単機能で使用するのが良さそう
+   - Momento Cache は検索フィルタ機能はないので、外側で戦う必要はある。Cloudflare D1と組み合わせると良さそう
+4. D1 と Momento Cache のレコードの同期が課題ではあるけど、なければDictionary で取れないだけだと思うので、それほど問題ではなさそう
 
-### Keyで簡単に検索するアイデア
-- D1 で index テーブルを作る
-### Sorted Set を使う
+## 最後に
+今回の機能とは少しズレますが、Momentoはシンプルな機能が多いので、完全なRedis互換だと思っていると案外できないことが多いので、 外側で色々作る必要が出てきます。
+クエリキャッシュなど1:1のキャッシュの場合は良いですが、検索したり色々制御を入れたい場合は制御を作りましょう。
 
-### Directory Base Cache 的に考えて、
-キーが別であれば、cache テーブルを検索することを考える
-- 一貫性の担保を cache テーブルで考えると楽
-
-簡単な検索できるようにする
-- どういう構造で格納するのが良いのか？
-
-Woker(Searcher) - Momento Cache(Dictionary) 
-- 基本的にDictionary に同一ルールセットのデータは詰め込む
-- DictionaryGetFields を使って、複数キーを一度に取得する
-- D1 にindex テーブルを作る
-- select * from D1 where key = 'index' and value = 'value'
-- Eviction されたkey が見つかったら、after worker で削除する
-
-### Client Side Caching
-https://redis.io/docs/manual/client-side-caching/
-
-Client Side は Session Storage
 

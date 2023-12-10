@@ -12,6 +12,8 @@ publication_name: ftd_tech_blog
 この記事は、Momento Advent Calendar 2023 3日目の記事です。
 :::
 
+@[card](https://qiita.com/advent-calendar/2023/momento)
+
 ## やりたいこと
 `Momento Cache` は、`redis` や `memcached` のようなキャッシュサーバーです。
 コンピューティング時間で課金されるサービスと違い、`月の無料枠＋従量課金`があって、スモールスタートなどとても使いやすいです。個人的に今まで使ってこなかった発想でキャッシュを使い倒したい。
