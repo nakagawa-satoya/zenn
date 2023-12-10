@@ -2,7 +2,7 @@
 title: "Momento Cache + D1 を使って簡易絞り込み機能を作る"
 emoji: "👌"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: ["Momento", "Hono", "Cloudflare","D1"]
+topics: ["Momento", "Cache","Hono", "Cloudflare","D1"]
 published: true
 publication_name: ftd_tech_blog
 ---
