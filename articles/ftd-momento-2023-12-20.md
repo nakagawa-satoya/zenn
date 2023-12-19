@@ -44,6 +44,25 @@ Commands:
 とりあえず手元で使う程度にしていますが、整理してそのうちpackage にして配布します。
 :::
 
+```toml:config.toml
+[cache.<キャッシュ名1>]
+MOMENTO_API_KEY="キャッシュ名1のAPIキー"
+
+[cache.<キャッシュ名2>]
+MOMENTO_API_KEY="キャッシュ名2のAPIキー"
+
+[cache.<キャッシュ名3>]
+MOMENTO_API_KEY="キャッシュ名3のAPIキー"
+
+[cache.<キャッシュ名4>]
+MOMENTO_API_KEY="キャッシュ名4のAPIキー"
+```
+
+:::message
+config.toml で複数のキャッシュのAPIキーを管理できるようにしています。切り替えて管理するのが大変なので、まとめて管理できるよう
+:::
+
+
 ### 使い方
 #### Setsのキャッシュ設定例
 ```bash:
