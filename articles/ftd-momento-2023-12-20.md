@@ -1,9 +1,9 @@
 ---
-title: "momento Topics で擬似リアルタイム同期"
+title: "Momento CLI簡易版を作る"
 emoji: "🦁"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: []
-published: false
+topics: ["momento","CLI"]
+published: true
 publication_name: ftd_tech_blog
 ---
 # Momento CLI簡易版を作る
