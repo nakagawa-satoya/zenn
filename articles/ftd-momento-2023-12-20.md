@@ -38,11 +38,18 @@ Commands:
   cacheSortedSet [options] <op> <name> <set> <value>  Momento Cache SortedSet Type Cache
   help [command]                                      display help for command
 
+Example:
+    pnpm dev cacheSets Set <name> <key> -v <value> -c <config> 
+
 ```
+:::message
+pnpm が入っていない方は npm run で代用してください。
+:::
 
 :::message
 とりあえず手元で使う程度にしていますが、整理してそのうちpackage にして配布します。
 :::
+
 
 ```toml:config.toml
 [cache.<キャッシュ名1>]
