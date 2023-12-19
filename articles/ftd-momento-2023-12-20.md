@@ -45,6 +45,9 @@ Example:
 :::message
 pnpm が入っていない方は npm run で代用してください。
 :::
+:::message
+それぞれのOptionsの中身は `pnpm dev cacheSets --help` などで確認してください。
+:::
 
 :::message
 とりあえず手元で使う程度にしていますが、整理してそのうちpackage にして配布します。
