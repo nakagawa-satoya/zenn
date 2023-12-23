@@ -2,8 +2,8 @@
 title: "Cloudflare Worker + momento でリージョンと戦う"
 emoji: "🦔"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: ["Cloudflare","Momento","Cache","Hono"]
-published: false
+topics: ["Cloudflare","Momento","Cache","Hono","postman"]
+published: true
 publication_name: ftd_tech_blog
 ---
 # Cloudflare Worker + momento でリージョンと戦う
@@ -14,9 +14,28 @@ publication_name: ftd_tech_blog
 
 @[card](https://qiita.com/advent-calendar/2023/cloudflare)
 
+## お詫び
 :::message alert
-プログラムも合わせて公開したかったのですが、間に合わなかったので、後日アップデートします。
+記事中にPost の件なども触れているのですが、そちらはプログラムをもう少し作る必要があるため、実装後別で記事にします。
 :::
+
+
+## 今回の記事のプログラム
+@[card](https://gitlab.com/future-techno-developers/public/cloudflare-worker-collection/momento-cache-worker)
+
+## LT資料
+Cloudflare Meetup Tokyo vol.3 でLTした内容です。
+@[speakerdeck](76c33fe7d1ea4ffea1a20ea2e8c721ef)
+
+## 後半に出る Postman Monitorも見れるように用意してます。
+
+### Postman Monitor
+@[card](https://www.postman.com/ftechno-dev/workspace/presentation/monitor/Cloudflare-Worker-x-Momento----~1eea0a30-4039-40c0-83ea-65b3b62cb343)
+
+:::message
+workspace にCollection などもありますが、originサーバーは諸事情により、基本落としています。
+:::
+
 
 ## はじめに
 Cloudflare Worker の最大の特徴であるフリーリージョン。今回はこれにフォーカスして書きます。
@@ -25,7 +44,7 @@ Cloudflare Worker の最大の特徴であるフリーリージョン。今回�
 CloudflareはVPCやリージョンがなく、世界中のデータセンターで同じサービスが動いている。
 
 #### 特に
-Cloudflare Worker にくるリクエストは 一番近いデータセンターで処理されるため、どこからでも同じ速度でアクセスできるのは魅力です。
+Cloudflare Worker に入ってくるリクエストは 一番近いデータセンターで処理されるため、どこからでも同じ速度でアクセスできるのは魅力です。
 
 ### とはいえ
 全部、Cloudflare Workerにするわけにもいかないケースもあると思います。そうなると考慮が必要になるのが、オリジンサーバーのリージョン。
@@ -158,6 +177,9 @@ sequenceDiagram
     end 
     Worker ->>-Topics: Response
 ```
+:::message
+オリジン書き込み後のGet リクエストとの整合性が考慮できておらずうまくできていないため実現できていないです
+:::
 
 ## 処理概要
 ### リージョンチェック
@@ -242,18 +264,17 @@ app.get("/", async (c) => {
     );
 });
 ```
-https://speakerdeck.com/yoshiitaka/11shi-dian-momento-gai-yao-and-zui-xin-qing-bao
 ### Momento Casheで Cache Storeを準備する
 #### Why Momento?
 Momento に関してはこちらを参照してください。
 @[speakerdeck](0854573c9e9d41bdbe6e048d42ec192d)
 
 ##### 特徴
-- 安い。従量課金+5GB無料。使った分だけ課金のため、キャッシュをいくら作っても料金は変わりません。今回の用途でいくら増やしても良いのがありがたいです。リクエストが少ない場合はありがたいです。
+- 安い。従量課金+5GB無料。使った分だけ課金のため、キャッシュをいくら作っても料金は変わりません。今回の用途でいくら増やしても良いのがありがたいです。またリクエストが少ない場合もありがたいです。
 - 管理不要。サーバーレスなため、ElasticCacheのような面倒なインスタンス管理は不要です。
 - 速い。
 - 簡単。各言語のSDKが充実してます。特にPub/SubのTopics とWebhookの組み合わせがすごい簡単で、楽です。
-- Redis互換。ただし全機能が入っているわけじゃない。
+- Redisに似ている。でも互換じゃないので注意
 
 :::message
 特にキャッシュをいくら作っても料金が変わらないところが良いです。
@@ -273,7 +294,17 @@ Momento Big Fun さんの記事が大変参考になりますので、そちら�
 1. キャッシュは各リージョンに作成する
 2. キャッシュ名はTopics を利用する時に便利なのでそれぞれ分けておく
 
-キャッシュイメージを todo 画像を貼る
+![image](/images/2023-12-17/cache.png)
+
+:::message
+こんなに作っても料金一緒です! 嬉しい。全体のアクセス数にのみフォーカスできるのは本当にありがたいです。
+:::
+
+:::message alert
+キャッシュをあまり作りすぎると、管理が大変になります。別途そちらはツールを作っていきたいと思います。
+:::
+
+
 
 #### CacheStore データ構造
 リクエストが投げられるようなキャッシュ構造にしておく必要があります。
@@ -345,60 +376,80 @@ Queue の作成は Momento Cache のSorted Sets を利用します。
 2. 既読管理にScoreを利用する
 3. Score は同時に書き込むケースなどで同じScoreにする。追加するたびに+1
 3. 既読管理を処理したScoreは覚えておく。
-4. 
+
 
 ### Momento Topics で Publishして Worker を動かす
+Momento Topics は Subscriber を Momento Topics と Webhookと二つの方法があります。
 
+今回は Webhookを使用します。
 
-### Originへの書き込みをする
-
-### 1. Cloudflare Worker で全部やる
-Cloudflare Worker で全部
-を実行する。ある程度はできそうです。最近でたHyperDriveとSupabaseの組み合わせなどでキャッシュが聞くサービスもありそうです。
-
-2. Cloudflare 
-
-
-## やりたいこと
-1. Cloudflare
-## 作る
-
-## 最後に
-
-## AWS Ping Test
-https://cloudpingtest.com/aws
-https://cloudpingtest.com/gcp
-https://cloudpingtest.com/oracle
-https://cloudpingtest.com/azure
-
-## 構成
-![image](/images/momento/region.png)
+#### Cloudflare Worker で Momento Topics 考慮すること
+#### 1. Cloudflare Worker は 1リクエスト後に処理が終了し、常駐しません。
+Momento Topics のSubscriber は常駐している必要があるため、適していません。Webhookで、Momento からリクエストを送ることで
+処理をする方が適しています。今回Origin に手をいれる洗濯はしないため、Webhookを使います。
 
 :::message
-リージョンは置けるだけおきましょう
+常時起動のインスタンスの場合はTopics の方が通知は早いので、要求速度に応じて、使い分けると良いと思います。
 :::
-- 置けるだけおく
+
+#### 2. Publish するMomento Cacheのキャッシュを起点にSubscribeされる
+これはどういうことかというと、そのキャッシュが配置されているリージョンから通知が来ます。
+WebHookも該当のリージョンからAPIリクエストを送信するため、今回のケースではリージョンを一致させて処理をする必要があります。
+
+#### 処理概要
+
+:::message alert
+Get / Post の紐付けがうまくいかなったのでここは今回は割愛します。
+:::
+
+### 測定する
+#### 測定にPostman Monitor を使う
+@[card](https://www.postman.com/ftechno-dev/workspace/presentation/monitor/Cloudflare-Worker-x-Momento----~1eea0a30-4039-40c0-83ea-65b3b62cb343)
 
 
+#### 設定
+![image](/images/2023-12-17/region.png)
 
-## Origin 
-https://github.com/cnunciato/pulumi-strapi
+- US（East）Static IP とUS（West）Static IP は外しています。これはリクエスト元のcityが同じだったため変わらないためです。
 
-## Slide用
+#### 測定した結果
+22日の21時に１stリクエスト その後オンキャッシュ状態で動作しています。
+![image](/images/2023-12-17/monitor.png)
 
-### Cloudflare Worker のよいところ
-リージョンレス
+1st リクエスト以外は全てキャッシュからリクエストされています。
 
-### リージョンレスだと
-世界中からのアクセスが一定速度で対応できる
-嬉しい。海外も視野に入れているサービスだと嬉しい
+とはいえ。200ms 以上のリクエストがほとんどです。
+:::message alert
+別で調査して分かったのですが、これはCloudflare Worker の遅延によるものです。Enterprise プラン以外は低頻度のリクエストだとそれほど早いレスポンスになりません。
 
-### Momento Cache / Topics / Leaderboard 
-小板橋さんの資料を挟み込む
+:::
+
+## 考察
+1. リージョンの差異がな苦なった
+2. とはいえ200~300ms ぐらいのレスポンス
+3. どうせならキャッシュからの単純Getで100msは切りたい
+4. Tokyoリージョンに対してPostman Collectionからのリクエストは60ms ぐらいになる時もあったので、頻度や測定方法にも影響ありそう
+5. 測定方法もこれであっているのか評価した方が良い。性能劣化はわかるが厳密な調査ができているかは不明
+6. Momentoは 別記事で書いてますが、 50ms 程度で取得できるので遅くない
+
+## 100ms を切るには？
+1. キャッシュのGetのみであれば、Momento から直接取得する
+2. Postはある程度しょうがないところもある。
+3. Cloudflare WorkerのプランをEnterpriseにする(これはしたくない)
+4. 別のEdge Functionも評価してみる
+
+:::message
+今の所これぐらいしか思いつきません
+:::
+
+## 最後に
+Cloudflare Worker と Momento を使えば　爆速な道が見えるかと思いましたが、
+想像よりもCloudflare Worker に足を引っ張られています。Planだけの問題だったらこういうもんだと諦めるしかないのですが、
+もうちょっと考察していきたいです。
 
 
+## おまけ
+キャッシュチェックをMomentoのダッシュボードで行うのは面倒なので、CLIツールを作りました。
+こんな感じのツールが増えるともっとMomentoが身近になるんじゃないかなと思います。
 
-リージョン
-
-
-
+https://zenn.dev/articles/ftd-momento-2023-12-20
