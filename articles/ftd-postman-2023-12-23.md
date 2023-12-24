@@ -157,3 +157,18 @@ VS Code は試していませんが、おそらくアプリと同じ挙動をす
 ## 参考
 @[card](https://qiita.com/rikosaita/items/9a80cd3213b624ae1a3c)
 
+
+## おまけというかPostmanさんに要望(12.25追記)
+Postman Monitor でどのリージョンでFailed したのかぱっと見わからないです。いつもRegionを切り替える作業が発生して、俯瞰性がちょっと悪いんで、
+リージョン別に結果を出して欲しいです。
+```
+2 failed tests, 0 errors, across 9 regions12:00 AM, 25 Dec 2023
+```
+![image](/images/2023-12-17/region_error.png)
+
+### 参考
+@[card](https://www.postman.com/ftechno-dev/workspace/presentation/monitor/Home-Page-Monitoring~1eea1458-9aac-46b0-b42e-3ef827043b01)
+
+の 12/25 12AM を見て貰えばわかりますが、 2failed している。US(east)がデフォルトなのでどこがエラーしたかわからない
+- Asia Pacific
+- South America
