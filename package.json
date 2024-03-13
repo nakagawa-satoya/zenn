@@ -1,8 +1,11 @@
 {
+  "name": "blog/zenn",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
     "dev": "zenn preview"
   },
   "dependencies": {
-    "zenn-cli": "^0.1.150"
+    "zenn-cli": "^0.1.153"
   }
 }
