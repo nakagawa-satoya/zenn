@@ -38,8 +38,14 @@ npx zenn new:article --slug what-is-slug
 ## index
 ```bash
 npx zenn new:article --slug ftd-llam-2023-10-10 --title "ChatGPT/LangChainによるチャットシステム構築実践入門 から" --type tech --publication-name ftd_tech_blog 
-npx zenn new:article --slug ftd-kotlin-2023-12-01 --title "Kotlin Mutliplatform Watch party & Recap" --type tech --publication-name ftd_tech_blog 
-npx zenn new:article --slug ftd-ochacafe-2023-12-05 --title "OCI Cache with Redisでキャッシュ管理" --type tech --publication-name ftd_tech_blog 
-npx zenn new:article --slug ftd-postman-2024-01-29 --title "フロントエンドにこそおすすめしたいPostman" --type tech --publication-name ftd_tech_blog 
-npx zenn new:article --slug ftd-nuxt-2024-02-29 --title "Nuxt Fontを試してみた" --type tech --publication-name ftd_tech_blog 
+npx zenn new:article --slug ftd-tiug-2024-07-16 --title "TiDBユーザグループ「TiUG」TiDBソースコード輪読会 #1 アフターレポート" --type tech --publication-name tidb_user_group 
  ```
+https://tiug.connpass.com/event/319256/
+
+
+## book
+
+```
+ npx zenn new:book --slug tiug-2024-07-16 --title "TiDBソースコード輪読会 #2" --summary "TiDBソースコード輪読会 #2 の輪読ガイドです。" --price 0 --published false
+
+```
