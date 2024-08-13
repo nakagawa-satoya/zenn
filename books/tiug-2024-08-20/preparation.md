@@ -1,11 +1,11 @@
 ---
-title: "01.準備編"
+title: "事前準備"
 ---
 # 準備
-輪読会ではZoomで共有しますが、手元でも確認できるようにTiDB をローカルで動かせるように、TiUPをセットアップします。
+手元で動作確認できるようにTiDB をローカルで動かせるように、TiUPをセットアップするのを推奨します。
 
 :::message
-各回共通で使用する予定です。
+各回共通です。
 :::
 
 
@@ -14,7 +14,7 @@ title: "01.準備編"
 こちらの手順に従って、インストールしてください。
 https://docs.pingcap.com/ja/tidb/stable/tiup-overview#install-tiup
 
-:::bash
+:::message
 Windows はWSL2 上のLinux環境でセットアップお願いします。
 :::
 
@@ -57,36 +57,18 @@ https://dev.mysql.com/doc/index-other.html
 取得したらCluster に流し込んでください。
 :::
 
-/todo 祭司帰る
 ```bash
-mysql --comments -u [ユーザー名] -h gateway01.ap-northeast-1.prod.aws.tidbcloud.com -P 4000 -D 'test' --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/cert.pem -p'MIpNXxAmpPn0TmRA'
+mysql --comments --host 127.0.0.1 --port 4000 -u root < world.sql
 ```
 
+## ここまで来たら準備は完了です。
 
-## 2. Plan replayer を実行する
-
+## 番外編 Plan Replayer を実行する方法
+Planを解析するツール
 https://docs.pingcap.com/ja/tidb/stable/sql-plan-replayer
 
 
-# MySQL 公式の
-https://dev.mysql.com/doc/index-other.html
+:::message alert
+Plan Replayer は輪読会中には実行してもデータが取れないので、使わないです。使いたかった・・・
+:::
 
-
-mysql パスワード
-`MIpNXxAmpPn0TmRA`
-
-```bash
-mysql --comments -u '6hoHPpNr3XCy7ar.root' -h gateway01.ap-northeast-1.prod.aws.tidbcloud.com -P 4000 -D 'test' --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/cert.pem -p'MIpNXxAmpPn0TmRA'
-```
-
-## mysqldump
-```bash
-mysqldump -u '6hoHPpNr3XCy7ar.root' -h gateway01.ap-northeast-1.prod.aws.tidbcloud.com -P 4000 -D 'test' --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/cert.pem -p'MIpNXxAmpPn0TmRA' > test.sql
-```
-
-## mysql import
-```bash
-mysql -u '6hoHPpNr3XCy7ar.root' -h gateway01.ap-northeast-1.prod.aws.tidbcloud.com -P 4000 -D 'test' --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/cert.pem -p'MIpNXxAmpPn0TmRA' < ./books/tiug-2024-07-16/world-db/world.sql
-```
-
-## Plan replayer はローカルクラスターでできる

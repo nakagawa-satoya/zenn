@@ -5,7 +5,11 @@ published: false
 price: 0 # 有料の場合200〜5000
 # 本に含めるチャプターを順番に並べましょう
 chapters:
-  - 01.preparation
-  - 09.result
-  - 09.result
+  - prologue
+  - preparation
+  - system_r_model
+  - plan_builder
+  - logic_optimize
+  - physical_optimize
+  - table_statistics
 
