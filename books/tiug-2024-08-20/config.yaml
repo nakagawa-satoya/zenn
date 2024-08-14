@@ -1,7 +1,7 @@
 title: "TiDBソースコード輪読会 #2"
 summary: "TiDBソースコード輪読会 #2 の輪読ガイドです。"
 topics: ["TiUG", "TiDB","golang","DB","輪読会"]
-published: false
+published: true
 toc_depth: 2
 price: 0 # 有料の場合200〜5000
 # 本に含めるチャプターを順番に並べましょう
