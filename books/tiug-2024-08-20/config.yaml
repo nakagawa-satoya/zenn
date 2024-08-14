@@ -2,14 +2,19 @@ title: "TiDBソースコード輪読会 #2"
 summary: "TiDBソースコード輪読会 #2 の輪読ガイドです。"
 topics: ["TiUG", "TiDB","golang","DB","輪読会"]
 published: false
+toc_depth: 2
 price: 0 # 有料の場合200〜5000
 # 本に含めるチャプターを順番に並べましょう
 chapters:
   - prologue
   - preparation
   - system_r_model
-  - plan_builder
+  - left_deep_tree
   - logic_optimize
-  - physical_optimize
-  - table_statistics
+  - cost_calc
+#  - physical_optimize
+#  - table_statistics
+  - reference
+  - filetree
+  - package_reading
 
