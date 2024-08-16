@@ -123,7 +123,34 @@ func SumCostVer2(costs ...CostVer2) (ret CostVer2) {
 
 
 ## コストを見る
+今回は論理最適化のコスト計算結果を見ていきます。 
+### 論理最適化コストの取得
+```bash
+trace plan <sql> 
+```
 
-:::message alert
-Plan Replayer で見れそうならここで見ます。
+を実行すると
+```bash
+<tmpdir>/optimize_trace/<number>/<trace planの結果のzipファイル名 
+```
+にplan実行結果が確認できます。
+
+:::message
+tmpdir は go の　os.TempDir() のパスになります。下記は os.TempDir() の説明です。
+
+On Unix systems, it returns $TMPDIR if non-empty, else /tmp. 
+On Windows, it uses GetTempPath, returning the first non-empty value from %TMP%, %TEMP%, %USERPROFILE%, or the Windows directory. On Plan 9, it returns /tmp.
 :::
+
+
+```json:実行結果のJoin Reorderをしているところ
+    "steps": [
+      {
+        "action": "join order becomes ((cn*c)*cl) from original ((c*cn)*cl)",
+        "reason": "join cost during reorder: [[((cn*c)*cl), cost:14756.664870689656],[(cn*c), cost:8520.073275862069],[c, cost:4079],[cl, cost:984],[cn, cost:239]]",
+        "type": "Projection",
+        "id": 7,
+        "index": 0
+      }
+    ],
+```

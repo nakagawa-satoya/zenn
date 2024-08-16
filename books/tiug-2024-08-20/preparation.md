@@ -67,8 +67,6 @@ mysql --comments --host 127.0.0.1 --port 4000 -u root < world.sql
 Planを解析するツール
 https://docs.pingcap.com/ja/tidb/stable/sql-plan-replayer
 
-
-:::message alert
-Plan Replayer は輪読会中には実行してもデータが取れないので、使わないです。使いたかった・・・
+:::message
+統計情報の取得に使用します。
 :::
-
