@@ -9,7 +9,7 @@ chapters:
   - prologue
   - preparation
   - system_r_model
-  - left_deep_tree
+#  - left_deep_tree
   - logic_optimize
   - cost_calc
 #  - physical_optimize

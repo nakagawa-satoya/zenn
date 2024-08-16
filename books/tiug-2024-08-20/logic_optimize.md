@@ -1,8 +1,7 @@
 ---
-title: "DPを用いた網羅的探索"
+title: "論理最適化"
 ---
-# DPを用いた網羅的探索
-## まずは論理最適化
+# 論理最適化
 ![論理最適化](/images/tiug-2024-08-20/logic_optimization.png)
 
 
@@ -78,6 +77,17 @@ var optRuleList = []logicalOptRule{
 
 結合グループ内のすべてのノードについて、行数が推定されます。結合結果の行数は、単純で標準的な leftRowCount * rightRowCount / max(leftNDV, rightNDV) 式を使用して推定されます。次に、最小コスト (*baseSingleGroupJoinOrderSolver).baseNodeCumCost() で計算) を取得できる 2 つの行が選択され、内部結合によって接続されてから、結合グループに追加されます。このプロセスは、結合グループ内のすべてのノードが結合されるまで繰り返されます。
 
+### 参考：結合したテーブルの再配置
+https://docs.pingcap.com/ja/tidb/stable/join-reorder
+
+つまり・・・
+
+
+![Left Deep Tree](/images/tiug-2024-08-20/left_deep_tree.png)
+
+上記のようなツリー構造を明示的にに作ってから選択しているわけじゃなく、
+常に最小コストになるように、join treeを作っている
+
 ### ソースコード
 ```goland
 		if useGreedy {
@@ -94,7 +104,7 @@ var optRuleList = []logicalOptRule{
 		}
 
 ```
-## DP
+## DPリゾルバー
 `pkg/planner/core/rule_join_reorder_dp.go` で dpGraphメソッドをコールし、サブグラフ単位で、コスト計算をしている
 
 :::message 
@@ -139,7 +149,7 @@ func (s *joinReorderDPSolver) dpGraph(visitID2NodeID, nodeID2VisitID []int, _ []
 			if err != nil {
 				return nil, err
 			}
-			// comment: ここでは、Joinした時のコストを計算に、besPlanに格納している
+			// comment: ここでは、Joinした時のコストを計算に、bestPlanに格納している
 			curCost := s.calcJoinCumCost(join, bestPlan[sub], bestPlan[remain])
 			tracer.appendLogicalJoinCost(join, curCost)
 			if bestPlan[nodeBitmap] == nil {
@@ -153,12 +163,14 @@ func (s *joinReorderDPSolver) dpGraph(visitID2NodeID, nodeID2VisitID []int, _ []
 			}
 		}
 	}
+	// comment: ここで、最適なJoinの組み合わせを返している
+	// nodeCnt はツリーの深さを表していると思われる
 	return bestPlan[(1<<nodeCnt)-1].p, nil
 }
 
 ```
 
-## Greedy
+## Greedyソルバー
 `pkg/planner/core/rule_join_reorder_dp.go` で サブグラフ単位で、コスト計算をしている
 
 :::message
@@ -211,6 +223,7 @@ func (s *joinReorderGreedySolver) solve(joinNodePlans []base.LogicalPlan, tracer
 	}
 	var cartesianGroup []base.LogicalPlan
 	for len(s.curJoinGroup) > 0 {
+	// comment: ここで最小コストのノードを計算している
 		newNode, err := s.constructConnectedJoinTree(tracer)
 		if err != nil {
 			return nil, err
@@ -231,3 +244,4 @@ func (s *joinReorderGreedySolver) solve(joinNodePlans []base.LogicalPlan, tracer
 }
 
 ```
+

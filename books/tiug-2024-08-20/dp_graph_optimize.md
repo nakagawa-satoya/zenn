@@ -52,7 +52,9 @@ var optRuleList = []logicalOptRule{
 
 ## Join 並べ替えソルバー
 `pkg/planner/core/rule_join_reorder.go` の`joinReOrderSolver`からコールしている
-`optimizeRecursive` で、DP による最適化を行っている。下記は処理中にDPソルバーかGreedyソルバーか選んでJoinを実行している
+`optimizeRecursive` で、DP とGreedy アルゴリズムによる最適化を行っている。下記でDPソルバーかGreedyソルバーか選んでJoinを実行している
+
+TiDB では Left Deep Treeに関連する処理ももここでやっている様子なので合わせて見ていきましょう。
 
 ```goland
 		if useGreedy {
@@ -69,7 +71,17 @@ var optRuleList = []logicalOptRule{
 		}
 
 ```
-## DP Graph
+
+### TiDBの標準ソルバー
+:::message
+TiDB では デフォルトパラメータの設定で Greedy ソルバーが使われるように設定されている
+:::
+使いたい場合は
+https://docs.pingcap.com/ja/tidb/stable/system-variables#tidb-opt-join-reorder-threshold
+
+
+
+## DPソルバー
 `pkg/planner/core/rule_join_reorder_dp.go` で dpGraphメソッドをコールし、サブグラフ単位で、Joinしている
 
 :::message 
@@ -114,7 +126,7 @@ func (s *joinReorderDPSolver) dpGraph(visitID2NodeID, nodeID2VisitID []int, _ []
 			if err != nil {
 				return nil, err
 			}
-			// comment: ここでは、Joinした時のコストを計算に、besPlanに格納している
+			// comment: ここでは、Joinした時のコストを計算し、bestPlanに格納している
 			curCost := s.calcJoinCumCost(join, bestPlan[sub], bestPlan[remain])
 			tracer.appendLogicalJoinCost(join, curCost)
 			if bestPlan[nodeBitmap] == nil {
@@ -128,7 +140,13 @@ func (s *joinReorderDPSolver) dpGraph(visitID2NodeID, nodeID2VisitID []int, _ []
 			}
 		}
 	}
+	
+	// comment: ここで、最適なJoinの組み合わせを返している
+	// nodeCnt はツリーの深さを表していると思われる
 	return bestPlan[(1<<nodeCnt)-1].p, nil
 }
 
 ```
+
+## Greedyソルバー
+`pkg/planner/core/rule_join_reorder_dp.go` で dpGraphメソッドをコールし、サブグラフ単位で、Joinしている

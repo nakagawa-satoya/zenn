@@ -12,8 +12,8 @@ https://docs.pingcap.com/ja/tidbcloud/sql-physical-optimization
 :::
 
 ## コストモデル
-コストモデルは Ver1,とVer2 がある
-### コストモデル Ver1 
+TiDB のコストモデルは Ver1,とVer2 がある
+### ソースコードVer1 
 ```go
 // GetPlanCostVer1 calculates the cost of the plan if it has not been calculated yet and returns the cost.
 func (p *PhysicalSelection) GetPlanCostVer1(taskType property.TaskType, option *optimizetrace.PlanCostOption) (float64, error) {
@@ -46,6 +46,10 @@ func (p *PhysicalSelection) GetPlanCostVer1(taskType property.TaskType, option *
 	return p.planCost, nil
 }
 ```
+#### バージョン指定
+TiDB v6.2.0 から ver2 がデフォルトで導入され、Ver1はデフォルトでは使用されていません。
+tidb_cost_model_version 変数を設定してバージョン切り替えができるようです。
+
 ### コスト計算処理 Ver_2
 ```go
 // GetCost computes the cost of projection operator itself.
@@ -62,7 +66,7 @@ func (p *PhysicalProjection) GetCost(count float64) float64 {
 }
 ```
 
-### コストモデル Ver2
+### ソースコード
 現在はこちらが有効なようです。
 ```go
 // GetPlanCostVer2 calculates the cost of the plan if it has not been calculated yet and returns the cost.

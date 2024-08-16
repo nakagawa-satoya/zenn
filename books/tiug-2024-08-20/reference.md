@@ -4,6 +4,11 @@ title: "付録：参考文献"
 # 参考文献
 輪読会の理解を円滑にするために参考にした文献です。
 
+## An Overview of Query Optimization in Relational Systems
+https://web.stanford.edu/class/cs345d-01/rl/chaudhuri98.pdf
+
+System R の論文です。
+
 ## TiUG 読書会 #1 TiDBのクエリ実行のしくみ
 https://www.docswell.com/s/bohnen/K4V3E6-tidb-query-execution
 
