@@ -46,6 +46,10 @@ https://tiug.connpass.com/event/319256/
 ## book
 
 ```
- npx zenn new:book --slug tiug-2024-07-16 --title "TiDBソースコード輪読会 #2" --summary "TiDBソースコード輪読会 #2 の輪読ガイドです。" --price 0 --published false
+ npx zenn new:book --slug tiug-2024-08-20 --title "TiDBソースコード輪読会 #2" --summary "TiDBソースコード輪読会 #2 の輪読ガイドです。" --price 0 --published false
+ npx zenn new:book --slug tiug-2024-09-20 --title "TiDBソースコード輪読会 #3" --summary "TiDBソースコード輪読会 #3 の輪読ガイドです。" --price 0 --published false
+ npx zenn new:book --slug tiug-2024-10-20 --title "TiDBソースコード輪読会 #4" --summary "TiDBソースコード輪読会 #4 の輪読ガイドです。" --price 0 --published false
+ npx zenn new:book --slug truenas-startup --title "TrueNAS ではじめる" --summary "TiDBソースコード輪読会 #2 の輪読ガイドです。" --price 0 --published false
+ npx zenn new:book --slug webgpu-renderfarm --title "TrueNAS ではじめる" --summary "TiDBソースコード輪読会 #2 の輪読ガイドです。" --price 0 --published false
 
 ```
